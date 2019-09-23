@@ -20,6 +20,7 @@
 \usepackage{url,hyperref,lineno,microtype,subcaption}
 \usepackage[onehalfspacing]{setspace}
 \usepackage{todonotes}
+\usepackage{tabularx}
 
 \newcommand {\name}{SNATCH}
 
@@ -48,7 +49,7 @@ $^{4}$Department of Industrial Engineering \& Innovation Sciences, Eindhoven Uni
 \onecolumn
 \firstpage{1}
 
-\title[]{Is automatic calibration of neuromorphic chips feasible?} 
+\title[]{Is the automatic calibration of neuromorphic chips feasible?} 
 
 \author[\firstAuthorLast ]{\Authors} %This field will be automatically populated
 \address{} %This field will be automatically populated
@@ -98,7 +99,7 @@ All NCs exploit hardware implementations that can be classified into three main 
 (ASIC), ($ii$) analog, such as field programmable analog arrays (FPAAs) or field programmable neural array (FPNA), ($iii$) and mixed digital/analog platforms.
 We refer the interested reader to \cite{schuman2017survey} for additional information. 
 
-Among the existing implementations, the Spikey chip \cite{Pfeil2013} is a peculiar reconfigurable neuromorphic system, able to simulate the temporal evolution of the membrane potentials of a network consisting of 384 neurons, governed by a conductance-based Leaky Integrate-And-Fire (LIF) model  \cite{}.
+Among the existing implementations, the Spikey chip \cite{Pfeil2013} is a peculiar reconfigurable neuromorphic system, able to simulate the temporal evolution of the membrane potentials of a network consisting of 384 neurons, governed by a conductance-based Leaky Integrate-And-Fire (LIF) model  \cite{gerstner2002spiking}.
 Each neuron has a capacitive membrane that integrates the charge flowing through the different ion channels; when the membrane potential reaches its threshold voltage, a spike is generated.  
 The neuron then enters a brief refractory period, during which it ignores all incoming signals and maintains its resting potential.
 In Spikey, all synapses are conductance-based, and use realistic levels for their reversal potentials. 
@@ -175,7 +176,7 @@ Specifically, all inputs that cause a post-synaptic neuron reaction get strength
 
 	\centering
 	\small
-	\begin{tabular}{l|c|c|l}
+	\begin{tabularx}{\textwidth}{l|c|c|X}
 	\hline
 	\textbf{Parameter name}  & \textbf{Parameter code} & \textbf{Parameter interval} & \textbf{Notes} \\
 	\hline
@@ -193,7 +194,7 @@ Specifically, all inputs that cause a post-synaptic neuron reaction get strength
 		Inhibitory reversal potential 	&  $\texttt{e\_rev\_I}$ & $[-80.0, -55.0]$ &	Shared among neurons in the network\\
 	\hline
 
-	\end{tabular}
+	\end{tabularx}
 \end{table}
 
 The neural connection topology in the Spikey chip can be arbitrarily reconfigured by the user.
@@ -238,11 +239,15 @@ In order to automatically identify the optimal parameters that precisely reprodu
 
 
 \subsection{SNATCH -- Spiking Neurons Activity Targeting and Calibration} 
+
+\todo[inline]{e qui la mia mente si perde in infiniti spazi... il titolo della sezione è SNATCH, ma nella sezione si parla solo di fitness e di FST-PSO. SNATCH compare solo in fondo, e il lettore non può avere la minima idea di come sia collegato a quanto scritto prima}
+
 The problem of calibrating the parameters of the NC can be restated as an optimization problem.
-Specifically, the goal is to minimize a fitness function defined as the distance between a target neuronal spiking activity---e.g., recorded from a biological network in laboratory experiments (see \cite{} or \cite{} for some  examples)---and the simulated activity of the network using a putative parameterization. 
+Specifically, the goal is to minimize a fitness function defined as the distance between a target neuronal spiking activity---e.g., recorded from a biological network in laboratory experiments (see \cite{} or \cite{} for some  examples)---and the activity of the network simulated by using a putative parameterization. 
+\todo[inline]{mancano i rif bib}
 
 More precisely, given a candidate solution $\textbf{x}$, the fitness function is defined as follows. 
-We denote by $T$ the total time of the simulation;  $J$ is the number of neurons in the network; $\boldsymbol{\omega}_{\sigma}^j = (t_1, \dots, t_M), $ and $\boldsymbol{\omega}_{\tau}^j = (t_1, \dots, t_N)$ are the vectors of spiking times of the \textit{j}-th neuron, sampled during the simulation and in laboratory experiments, respectively (please note that $M$ can be different with respect to $N$). 
+We denote by $T$ the total time of the simulation,  $J$ is the number of neurons in the network, $\boldsymbol{\omega}_{\sigma}^j = (t_1, \dots, t_M)$ and $\boldsymbol{\omega}_{\tau}^j = (t_1, \dots, t_N)$ are the vectors of spiking times of the \textit{j}-th neuron sampled during the simulation and in laboratory experiments, respectively (please note that $M$ can be different from $N$). 
 Then, the fitness is defined as:
 \begin{equation}
 %f(\textbf{x}) = \displaystyle \sum_{j=0}^{J} \left|\int_{0}^{T}\phi(\omega_{\sigma}^j) - \int_{0}^{T}\phi(\omega_{\tau}^j)\right|,
@@ -254,22 +259,22 @@ where $\phi$ is the area of a curve that increases by $1$ whenever the $j$-th ne
     \phi(\boldsymbol{\omega}^j) = \sum_{k=1}^{|\boldsymbol{\omega}^j|-1} k \cdot ( t_{k+1} - t_k ).
 \end{equation}
 %This function is defined as follows: given the spike times of a neuron, the function increases by one every time the neuron presented a spike at a certain instant. 
-The fitness function defined in Equation \ref{eq:fitness} represents a cumulative distance between the areas of $\phi$, calculated on both target and simulation, for all neurons in the network. 
-Please note that when $\boldsymbol{\omega}_{\tau}^j = \boldsymbol{\omega}_{\sigma}^j$, for all $j=0, \dots, J-1$, then the two areas will be identical and the fitness will be zero.
+The fitness function defined in Equation \ref{eq:fitness} represents a cumulative difference between the area of the two curves $\phi(\boldsymbol{\omega}^j_{\sigma})$ and $\phi(\boldsymbol{\omega}^j_{\tau})$, calculated on both the target and the simulation, for all neurons in the network. 
+Please note that when $\boldsymbol{\omega}_{\tau}^j = \boldsymbol{\omega}_{\sigma}^j$, for all $j=0, \dots, J-1$,  the two areas are identical and the fitness value of $\textbf{x}$ will be equal to zero.
 Every difference in the spiking time, or in the number of spikes, will increment the final fitness value.
 
-In this work we wanted to design a calibration method able to identify an optimal parameterization, with respect to a desired behavior, without the need for any user intervention. 
-Due to the non-linearity and non-convexity of the problem, we opted for a global optimization method. Specifically, the algorithm used to minimize Equation \ref{eq:fitness} was FST-PSO \cite{Nobile2018}, a self-tuning variant of the global optimization meta-heuristic Particle Swarm Optimization (PSO) \cite{Kennedy1995}.
+In this work we aimed at designing a calibration method able to identify an optimal parameterization, with respect to a desired behavior, without the need for any user intervention. 
+Due to the non-linearity and non-convexity of the problem, we opted for a global optimization method. Specifically, the algorithm used to minimize Equation \ref{eq:fitness} is FST-PSO \cite{Nobile2018}, a self-tuning variant of the global optimization meta-heuristic PSO \cite{Kennedy1995}.
 %, one of the most effective methods for the global optimization of non-linear and complex high-dimensional problems. 
 FST-PSO is a settings-free method in which particles automatically determine the optimal functioning settings (i.e., inertia weight, cognitive and social factors, minimum and maximum velocities) by leveraging a Fuzzy Rule-Based System that dynamically adjusts such constants for each particle during the optimization process. 
 %This self-tuning capability is really important, because an expertise in PSO functioning and an expert of the problem domain are not required. 
-FST-PSO also automatically calculates the dimension \textit{P} of the swarm according to the number of dimensions \textit{D} of the search space, using the formula $\textit{P} = \lfloor 10 + 2\sqrt{\textit{D}}\rfloor$. 
+In addition, FST-PSO  automatically calculates the dimension \textit{P} of the swarm according to the number of dimensions \textit{D} of the search space, using the formula $\textit{P} = \lfloor 10 + 2\sqrt{\textit{D}}\rfloor$. 
 The search space, in which the swarm can move, is bounded to avoid the exploration of unfeasible parameterizations.
-In this work, the limits are determined by the physical limitations of the Spikey NC; these boundaries are listed in Table \ref{tab:parameters}.
-When a particle goes outside the boundaries of the search space along one component, FST-PSO adopts  a damping strategy: the particle is relocated inside the search space with a stochastic displacement, and the velocity component is changed in the opposite direction for that component. 
+In this work, the limits are determined by the physical limitations of the Spikey NC (see Table \ref{tab:parameters}).
+When a particle goes outside the boundaries of the search space along one of its components, FST-PSO adopts  a damping strategy: the particle is relocated inside the search space with a stochastic displacement, and the velocity component is changed in the opposite direction for that component. 
 %Finally, each particle has a minimum and maximum velocity, which are determined by Fuzzy Logic rules, and they avoid that the velocity diverges or the particles do not explore the search space enough. 
-During each iteration, the positions of the best particle of the swarm \textbf{g} is updated.
-At the end of the process---in this work, after 100 iterations---the last solution \textbf{g} is returned as optimal solution of the problem under investigation.
+During each iteration, the position of the best particle \textbf{g} of the swarm  is updated.
+At the end of the process---in this work, after 100 iterations---the last value of \textbf{g} is returned as the optimal solution of the problem under investigation.
 %, during the process tracking down the value of \textbf{g} after every iteration is possible.
 
 \name{} was implemented using Python 2.7 and the following libraries:  PyNN 0.6, FST-PSO 1.6, numpy 1.14.3, pexpect 4.5, scipy 1.1, and miniful 0.4.
@@ -280,10 +285,13 @@ Since SNATCH is designed to determine all missing parameters of a model, includi
 \section{Results}
 \label{sec:results}
 
-We tested the performances of \name{} on a set of increasingly complex networks: a simple system with two sequential neurons, characterized by $D=6$ unknown parameters (Figure \ref{fig:topology-2neurons}); a feedback ring network with $D=12$ unknown parameters (Figure \ref{fig:topology-feedback}); a more complex network inspired by the brain of starfish (Figure \ref{fig:topology-starfish}), characterized by $D=17$ unknown parameters.
+\todo[inline]{in questa sezione, ma forse anche prima, i numeri sono scritti un po' a parole e un po' con le cifre, uniformare please (anche nelle caption)}
+
+We tested the performances of \name{} on a set of networks characterized by an increasing complexity: a simple system with two sequential neurons with $D=6$ unknown parameters (Figure \ref{fig:topology-2neurons}); a feedback ring network with $D=12$ unknown parameters (Figure \ref{fig:topology-feedback}); a more complex network inspired by the brain of starfish (Figure \ref{fig:topology-starfish}), with $D=17$ unknown parameters.
+\todo[inline]{suggerisco di chiamarli Network A,B,C o Model A,B,C, e fare riferimento nel testo (e nelle caption) con questi "nomi"}
 Besides the connection topology, all figures also show the parameters to be estimated and their nominal values.
-For each network, we performed a simulation of the spiking activity, that was used as \emph{in silico} target for the calibration.
-The input stimuli, fed to the networks, was an irregularly spaced sequence of spiking impulses.
+For each network, we performed a simulation of the spiking activity that was used as \emph{in silico} target for the calibration.
+The input stimuli, fed to each network, was an irregularly spaced sequence of spiking impulses.
 
 \begin{figure}[!ht]
 	\centering
@@ -308,7 +316,7 @@ The input stimuli, fed to the networks, was an irregularly spaced sequence of sp
 %\name{} was implemented using Python 2.7 and the following libraries:  PyNN 0.6, FST-PSO 1.6, numpy 1.14.3, pexpect 4.5, scipy 1.1, and miniful 0.4.
 %In all results that follow, the calibration was repeated 30 times to collect statistical information and analyze the average behavior of \name{}.
 
-Figure \ref{fig:target-2neurons} shows the result of the preliminary test on the simple two neurons model, comparing the best solution found by \name{} (bottom figure) and the target spiking activity (top figure).
+Figure \ref{fig:target-2neurons} shows the result of the preliminary test on the simple two neurons model, comparing the best solution found by \name{} (bottom panel) and the target spiking activity (top panel).
 Each dot in the figures represent a spike produced by one of the two neurons in the network (denoted by green and blue colors).
 The results show that \name{} correctly estimated  the 6 parameters and was able to converge to an optimal solution with respect to the spiking activity.
 Thus, from a strictly phenomenological point of view, the Spikey chip is reproducing the expected behavior of the target neural network.
@@ -316,38 +324,49 @@ Thus, from a strictly phenomenological point of view, the Spikey chip is reprodu
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=\textwidth]{images/2-neurons-irregular/target_sim.pdf}
-	\caption{Comparison of the target (top) and the best fitting individual identified by \name{} (bottom), in the case of the simple network with 2 neurons.}
+	\caption{Comparison of the target (top panel) and the best fitting individual identified by \name{} (bottom panel), in the case of the simple network with 2 neurons.}
 	\label{fig:target-2neurons}
 \end{figure}
 
-The six box-plots reported in Figure \ref{fig:boxplots-2neurons} (on the left) show the distributions of optimal parameters identified by \name{}.
+\todo[inline]{riformulare la caption di Fig.4 (e altre analoghe), non stiamo mostrando il best fitting individual}
+
+The six box-plots reported in Figure \ref{fig:boxplots-2neurons} (left side) show the distributions of the optimal parameters identified by \name{} over the 30 runs.
 The red solid lines denote the nominal values used to generate the target data, while the black dashed line represent the better fitting solution found by \name{}. 
-The Figure \ref{fig:boxplots-2neurons} (on the right) shows the convergence plot of FST-PSO. 
+Figure \ref{fig:boxplots-2neurons} (right side) also shows the convergence plot of FST-PSO. 
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=.25\textwidth]{images/2-neurons-irregular/boxplot_best_values.pdf}
 	\includegraphics[width=.49\textwidth]{images/2-neurons-irregular/mean.pdf}
-	\caption{Results of the calibration of a simple network with 2 neurons using \name{}. On the left we show the distribution of the optimal parameters. The red solid lines denote the nominal values used to generate the target. The black dashed line denote the best parameterization found by \name{}. On the right we show the convergence plot of FST-PSO. The average and the standard deviation of the 30 runs are denoted by the black solid line and the red filled area.}
+	\caption{Results of the calibration of a simple network with 2 neurons using \name{}. On the left we show the distribution of the optimal parameters. The red solid lines denote the nominal values used to generate the target. The black dashed line denote the best parameterization found by \name{}. On the right we show the convergence plot of FST-PSO. The mean and the standard deviation of the 30 runs are denoted by the black solid line and the red filled area, respectively.}
 	\label{fig:boxplots-2neurons}
 \end{figure}
 
-Our results show that multiple parameterizations are equivalent from the point of view of the spiking activity, that is, are characterized by a similar fitness value.
-It is worth noting that the simulated potentials might differ because of the different parameterization, but this information is lost due to the type of record performed by the chip. 
-Again, from the point of view of the pure spiking activity, they dynamics are  completely identical.
+Our results show that multiple parameterizations
+\todo[inline]{nel senso che esistono più soluzioni distinte, ma che fittano bene tutte? if so, rifrasare questo "multiple parameterizations"}
+are equivalent from the point of view of the spiking activity, that is, they are characterized by a similar fitness value.
+It is worth noting that the simulated potentials
+\todo[inline]{membrane potentials?}
+might differ because of the different parameterization, but this information is lost due to the type of record performed by the chip. 
+\todo[inline]{non si capisce una cippa in questa frase}
+Again, from the point of view of the pure spiking activity, they
+\todo[inline]{they, YOH! ma poi, their di chi?}
+dynamics are  completely identical.
 
 We repeated the calibration test using the second network, that is, the feedback loop with 5 neurons and 12 missing parameters. 
 Figure \ref{fig:target-ring} shows that \name{} was again able to perfectly reproduce the expected behavior, fitting all targets with the exception of some exceeding spiking activity mainly at the end of the simulation.
+\todo[inline]{nessuna ipotesi sul perché si ottiene questo comportamento?}
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=\textwidth]{images/ring-network-regular/target_sim.pdf}
-	\caption{Comparison of the target (top) and the best fitting individual identified by \name{} (bottom), in the case of the ring network.}
+	\caption{Comparison of the target (top panel) and the best fitting individual identified by \name{} (bottom panel), in the case of the ring network.}
 	\label{fig:target-ring}
 \end{figure}
 
-Again, by inspecting the distribution of parameters (see Figure \ref{fig:convergence-ring}, on the left), some values are very different with respect to the nominal values, while some other show a high sensitivity. 
+By inspecting the distribution of parameters (Figure \ref{fig:convergence-ring}, left side), some values are very different with respect to the nominal values, while some other show a high sensitivity. 
 This was actually the case of the  weight of neuron 1: being upstream of the whole network, and requires a high precision to reproduce the correct spiking  activity.
+\todo[inline]{eh?}
 
 
 %\todo[inline]{Daniele, per favore ingrandisci i font dei boxplot. Probabilmente puoi anche dimezzare la larghezza degli stessi. Riguardo le figure delle tracce, puoi drammaticamente ridurre l'altezza delle figure. Nelle figure delle tracce, per quanto riguarda gli ID dei neuroni, per favore solo numeri interi. Togli i titoli nei due panel. Fai anche l'asse delle "x" shared, che tanto è lo stesso sia per target che per simulazione (MSN)}
@@ -357,7 +376,7 @@ This was actually the case of the  weight of neuron 1: being upstream of the who
 	\includegraphics[width=.24\textwidth]{images/ring-network-regular/boxplot-gleak.pdf}
 	\includegraphics[width=.24\textwidth]{images/ring-network-regular/boxplot-weights.pdf}
 	\includegraphics[width=.49\textwidth]{images/ring-network-regular/mean.pdf}
-	\caption{Results of the calibration of a feedback loop network with 5 neurons using \name{}. On the left we show the distribution of the optimal parameters. The red solid lines denote the nominal values used to generate the target. The black dashed line denote the best parameterization found by \name{}. On the right we show the convergence plot of FST-PSO. The average and the standard deviation of the 30 runs are denoted by the black solid line and the red filled area.}
+	\caption{Results of the calibration of a feedback loop network with 5 neurons using \name{}. On the left we show the distribution of the optimal parameters. The red solid lines denote the nominal values used to generate the target. The black dashed line denote the best parameterization found by \name{}. On the right we show the convergence plot of FST-PSO. The mean and the standard deviation of the 30 runs are denoted by the black solid line and the red filled area, respectively.}
 	\label{fig:convergence-ring}
 \end{figure}
 
@@ -365,66 +384,101 @@ In our third group of tests, we calibrated a topology corresponding to...  starf
 \todo[inline,color=lime]{Simone puoi raccontare qualcosa? (MSN)}
 
 The purpose of this test was to investigate the performance of \name{} in  inferring the weights of inhibitory synapses. 
-We show in Figure \ref{fig:topology-starfish} the topology of this neural network, denoting by solid and dashed lines the excitatory and inhibitory connections between the neurons, respectively.
-In this test, \name{} failed to identify any optimal solutions, as shown in Figure \ref{fig:target-stellona}. 
-As a matter of fact, the spiking sequence differs as the solution found by \name{} is characterized by a slightly different activity (e.g., neuron 4 spikes two times in the simulation during the interval 0--50ms, while only a single spike was present in the target).
+Figure \ref{fig:topology-starfish} shows the topology of this neural network, where the excitatory and inhibitory connections between the neurons are denoted by solid and dashed lines, respectively.
+In this test, \name{} failed
+\todo[inline]{partially failed?}
+to identify any optimal solutions, as shown in Figure \ref{fig:target-stellona}. 
+As a matter of fact, the target and simulated spiking sequences differ as the solution found by \name{} is characterized by a slightly different activity (e.g., neuron 4 spikes two times in the simulation during the interval 0--50 ms, while only a single spike was present in the target).
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=\textwidth]{images/failed-starfish/target_sim.pdf}
-	\caption{Comparison of the target (top) and the best fitting individual identified by FST-PSO (bottom), in the case of the starfish network. }
+	\caption{Comparison of the target (top panel) and the best fitting individual identified by FST-PSO (bottom panel), in the case of the starfish network. }
 	\label{fig:target-stellona}
 \end{figure}
 
-We investigated this circumstance, in order to determine what was preventing FST-PSO from a proper convergence to an optimal solution. 
-By checking the convergence plots of all runs, we observed that the $\textbf{g}$ solutions throughout the iterations were actually excellent from the point of view of the fitness value (see Figure \ref{fig:starfishall}); in particular, they were much lower than the previous experiments. 
-However, we noted that many of these solutions were not improved by FST-PSO until the end of the optimization (check the flat lines).
+We investigated this circumstance in order to determine what was preventing FST-PSO
+\todo[inline]{SNATCH?}
+from a proper convergence to an optimal solution. 
+By checking the convergence plots of all runs, we observed that the best global solutions $\textbf{g}$ throughout the 30 runs were actually excellent from the point of view of the fitness value (see Figure \ref{fig:starfishall}); in particular, they were much lower than the fitness values achieved in the experiments previously shown. 
+However, many of these solutions were not improved by FST-PSO until the end of the optimization.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{images/failed-starfish/fitness-each-optimization.pdf}
-    \caption{Convergence plots of 30 runs of \name{}. Although many runs seem to immediately converge to optimal solutions, the swarms are actually mislead by wrong evaluations of the fitness value. }
+    \caption{Convergence plots of 30 runs of \name{}. Although many runs seem to immediately converge to an optimal solution, the swarms are actually mislead by wrong evaluations of the fitness value. }
     \label{fig:starfishall}
 \end{figure}
+
+\todo[inline]{in caption di fig.9, chiarire "wrong evaluations of the fitness value"}
 
 %\todo[inline]{Papetz, mi rifai figura 9 in maniera piu comprensibile? togli pure la legenda che non è molto informativa e ingrandiscimi i font sugli assi pls (MSN)}
 
 
-By simulating such solutions, we realized that the fitness values of $\textbf{g}$ calculated by \name{} were actually wrong: the values calculated \emph{a posteriori}  were much higher due to a very poor fitting with respect to the target traces.
-By repeating the simulations several times we noted that, in a few occasions,  Spikey was producing simulated traces that were different and more similar to the target behavior.
-This stochasticity introduces  sudden, unpredictable and misleading modifications of the spiking activity, which in turn can lead to wrong evaluations of the fitness value.
-Hence, the best particles $\textbf{g}$, characterized by an excellent fitness values that do not reflect the quality of their own parameterizations---are actually driving the swarms into wrong areas of the search space.
-Fatally, the swarm is no longer able to escape that region and \name{} eventually outputs poor parameterizations associated to excellent fitness values.
+By simulating such solutions,
+\todo[inline]{dai cazzo}
+we realized that the fitness values of $\textbf{g}$ calculated by \name{} were actually wrong: the values calculated \emph{a posteriori}  were much higher due to a very poor fitting with respect to the target traces.
+\todo[inline]{non si capisce niente... cosa vuol dire che erano sbagliate? ma non si può scrivere una cosa del genere in un paper!}
+By repeating the simulations several times
+\todo[inline]{magari specificare nelle stesse condizioni, eh}
+we noted that, in a few occasions,  Spikey was producing simulated traces that were different
+\todo[inline]{diverse da cosa?}
+and more similar to the target behavior.
+This stochasticity
+\todo[inline]{non capisco, a me questa (nella sequenza di spike ottenuta) sembra una stocasticità a posteriori, questa frase per me non ha senso (o non si capisce cosa volevate dire); oltretutto, all'inizio del paper si parla di noise dovuto ad altro, quindi qui il lettore resta confuso (e io pure)}
+introduces  sudden, unpredictable and misleading modifications of the spiking activity, which in turn can lead to wrong evaluations of the fitness value.
+\todo[inline]{gate sparire qualsiasi wrong da questo paper}
+Hence, the best particles $\textbf{g}$, 
+\todo[inline]{perché plurale?}
+characterized by an excellent fitness values that do not reflect the quality of their own parameterizations---are actually driving the swarms into wrong areas of the search space.
+Fatally, the swarm is no longer able to escape that region and \name{} eventually outputs poor
+\todo[inline]{poor no, cambiare aggettivo}
+parameterizations associated to excellent fitness values.
+\todo[inline]{tutto questo mi fa pensare che ci sia un problema nella definizione della fitness ;) il revisore ci stronca se descriviamo/discutiamo i risultati in questo modo (e fa bene)}
 
 
 \section{Discussion}
 \label{sec:discussion}
-Spikey's  stochasticity implies that two independent simulations of the same model, performed using the same parameterization, yield different spiking traces.
-We discuss this behavior, and its implications, by performing 1000 simulations of the Starfish model. 
+Spikey's  stochasticity
+\todo[inline]{idem come sopra}
+implies that two independent simulations of the same model, performed using the same parameterization, yield different spiking traces.
+We discuss this behavior, and its implications, by performing 1000 simulations of the starfish model. 
 Figure \ref{fig:distributionfiring} show the strip plots of the spiking events of the five neurons. 
 
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{images/failed-starfish/distribution-firing-light.pdf}
-    \caption{1000 simulated traces of the spiking activity of the five neurons in the starfish network. All simulations were performed using the same parameterization. A darker color corresponds to a higher probability of spiking event. The scattering and misalignment of points highlights the stochasticity of Spikey's simulation.}
+    \caption{1000 simulated traces of the spiking activity of the five neurons in the starfish network. All simulations were performed using the same parameterization. A darker color corresponds to a higher probability of a spiking event. The scattering and misalignment of points highlight the stochasticity of Spikey's simulation.}
     \label{fig:distributionfiring}
 \end{figure}
 
-Thanks to alpha blending, the darker areas correspond to a higher probability of a spiking event at that specific time point; in particular, a fully deterministic simulation would produce perfectly dark vertical single-pixel bars.
-On the contrary, the traces show that the spikes are shattered in time, and many lighter areas confirm that different simulations can yield radically different outcomes, corresponding to radically different fitness values.
+Thanks to alpha blending, the darker areas correspond to a higher probability of a spiking event at that specific time point---a fully deterministic simulation would produce perfectly dark vertical single-pixel bars.
+On the contrary, the traces show that the spikes are shattered
+\todo[inline]{scattered?}
+in time, and many lighter areas confirm that different simulations can yield radically different outcomes, corresponding to radically different fitness values.
 One striking example is the trace for Neuron 3: every simulation basically produces a different outcome, affecting the fitness values at each repetition. 
 In particular, if one of those ``outlier'' simulations perfectly fits with the target behavior, that will correspond to a very low fitness value that will hardly be repeated by the following attempts in that region of the search space. 
+\todo[inline]{riscrivere ultima frase, pls (e aggiustare tempi verbali)}
 
-The issue we just described represents the main limitation to the application of \name{} for the automatic calibration of NCs like Spikey, which are  characterized by a stochastic behavior due to physical aspects. 
+The issue we just described represents the main limitation to the application of \name{} for the automatic calibration of NCs like Spikey, which is characterized by a stochastic behavior due to physical aspects. 
 As future developments, we will investigate a novel fitness function able to mitigate this problem, even though this task is far from trivial.
-As a matter of fact, Spikey's simulation produces a peculiar trace composed of a list of spiking events, which are temporally misaligned and whose count can differ across multiple simulations. 
-Due to this circumstances, it is impossible to calculate an ``average'' trace out of multiple simulations.
+\todo[inline]{riformulare}
+As a matter of fact, Spikey's simulation produces a peculiar trace composed of a list of spiking events, which are temporally misaligned and whose count
+\todo[inline]{count?}
+can differ across multiple simulations. 
+Due to this circumstance, it is impossible to calculate an ``average'' trace out of multiple simulations.
+\todo[inline]{e a cosa servirebbe?}
 As an alternative we could, in principle, assess the fitness evaluations by ``binning'' the traces, in order to calculate the histograms of spiking probabilities.
 Then, we could use fixed thresholds to determine whether the putative parameterization actually yields a spiking event in that region with a high probability. 
-In the latter case, the goal of the calibration could be restated as an expectation maximization, that is, FST-PSO would be used to maximize the likelihood of experimental data given the putative parameterization.
+\todo[inline]{supercazzole a gogo... provare a riformulare in modo che anche un essere umano medio possa capire?}
+In the latter case, the goal of the calibration could be restated as an expectation maximization, that is, FST-PSO
+\todo[inline]{SNATCH?}
+would be used to maximize the likelihood of experimental data given the putative parameterization.
 
-As soon as we will define a sound fitness function for this calibration problem, we will increase the size of the neural network, ultimately aiming at the modeling of biologically meaningful topologies---like the sensory networks of model insects  \cite{namiki2009reconstruction,Pfeil2013}---in order to use \name{} to calibrate the system and reproduce their peculiar spiking behavior.
+As soon as we will define a sound fitness function for this calibration problem, we will increase the size of the neural network,
+\todo[inline]{ragazzi, perché tirarsi la merda addosso da soli? riscrivere pls}
+ultimately aiming at the modeling of biologically meaningful topologies---like the sensory networks of model insects  \cite{namiki2009reconstruction,Pfeil2013}---in order to use \name{} to calibrate the system and reproduce their peculiar spiking behavior.
 
 \section*{Author Contributions}
 MSN and DMP contributed conception and design of the study; DMP and MSN implemented SNATCH; MA provided access to the Spikey neuromorphic chip; SS provided biological domain knowledge; DMP performed the statistical analysis; DMP, MSN, SS, PC and DB analyzed the results; DMP and MSN wrote the first draft of the manuscript; MA, SS, PC and DB contributed to the writing of the manuscript. All authors contributed to manuscript revision, read and approved the submitted version.
@@ -439,6 +493,8 @@ We want to acknowledge the Universit\"at Heidelberg for kindly granting us acces
 \section*{Data Availability Statement}
 The datasets [GENERATED/ANALYZED] for this study can be found in the [NAME OF REPOSITORY] [LINK].
 % Please see the availability of data guidelines for more information, at https://www.frontiersin.org/about/author-guidelines#AvailabilityofData
+
+\todo[inline]{la biblio è da sistemare}
 
 \bibliographystyle{frontiersinSCNS_ENG_HUMS} % for Science, Engineering and Humanities and Social Sciences articles, for Humanities and Social Sciences articles please include page numbers in the in-text citations
 % \bibliographystyle{frontiersinHLTH&FPHY} % for Health, Physics and Mathematics articles

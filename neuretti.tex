@@ -160,11 +160,14 @@ The main advantage provided by Spikey is its high speed when simulating the neur
 
 %If the membrane potential reaches a threshold, a spike occurs and the neuron's potential is reset to its resting potential. 
 %If the sum of the input currents is insufficient to make the neuron spike, any change in its potential will be leaked out. 
-Spikey uses an extension of simple LIF neurons, by introducing the concept  of refractory period: as soon as the neuron spikes, it cannot produce  spikes anymore during the refractory interval. 
-Because of that, 
-\todo[inline]{because of cosa sono 6?}
-the parameters that can be set in Spikey's networks are six \cite{Pfeil2013}, as shown in Table \ref{tab:parameters}: for each neuron, the leak conductance and the refractory period can be set; the same resting and reset potentials, along with threshold and inhibitory reversal potentials, can be set for the whole network. 
-\todo[inline]{riscrivere queste ultime righe}
+\textcolor{blue}{Spikey uses an extension of simple LIF neurons, by introducing the concept  of refractory period: as soon as the neuron spikes, it cannot produce  spikes anymore during the refractory interval. 
+This LIF neuron model has 6 parameters that can be set in the Spikey network \cite{Pfeil2013}, as shown in Table \ref{tab:parameters}. 
+To be more precise, each neuron of the network has 2 parameters, i.e., the leak conductance and the refractory period; while the other 4 parameters pertain to the entire network, i.e, resting, reset, threshold and inhibitory reversal potentials.}
+
+% Because of that, 
+% \todo[inline]{because of cosa sono 6?}
+% the parameters that can be set in Spikey's networks are six \cite{Pfeil2013}, as shown in Table \ref{tab:parameters}: for each neuron, the leak conductance and the refractory period can be set; the same resting and reset potentials, along with threshold and inhibitory reversal potentials, can be set for the whole network. 
+% \todo[inline]{riscrivere queste ultime righe}
 In addition, as mentioned earlier, each synapse stores a configurable 4-bit weight.
 Spikey supports in hardware a long-term learning mechanism known as Spike-Timing-Dependent Plasticity (STDP) \cite{schemmel2006implementing}, a biologically inspired process in which the connection strengths (in this case, the weights) are adjusted according to the relative timing between a neuron's input and output spikings.
 Specifically, all inputs that cause a post-synaptic neuron reaction get strengthened, whereas inputs that do not cause post-synaptic activity are weakened and contribute \textcolor{red}{with a lower strength?} in future simulations.

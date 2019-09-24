@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This is just an example/guide for you to refer to when submitting manuscripts to Frontiers, it is not mandatory to use Frontiers .cls files nor frontiers.tex  %
 % This will only generate the Manuscript, the final article will be typeset by Frontiers after acceptance.   
 %                                              %
@@ -29,13 +29,14 @@
 
 \def\keyFont{\fontsize{8}{11}\helveticabold }
 \def\firstAuthorLast{Papetti {et~al.}} %use et al only if is more than 1 author
-\def\Authors{Daniele M. Papetti\,$^{1}$, Marco Antoniotti\,$^{1}$, Simone Spolaor\,$^{1}$, Daniela Besozzi\,$^{1}$,\\Paolo Cazzaniga\,$^{2,3}$ and Marco S. Nobile\,$^{1,3,4,*}$}
+\def\Authors{Daniele M. Papetti\,$^{1}$, Simone Spolaor\,$^{1}$, Daniela Besozzi\,$^{1}$,\\Paolo Cazzaniga\,$^{2,3}$  Marco Antoniotti\,$^{1,5}$, and Marco S. Nobile\,$^{1,3,4,*}$}
 % Affiliations should be keyed to the author's name with superscript numbers and be listed as follows: Laboratory, Institute, Department, Organization, City, State abbreviation (USA, Canada, Australia), and Country (without detailed address information such as city zip codes or street names).
 % If one of the authors has a change of address, list the new address below the correspondence details using a superscript symbol and use the same symbol to indicate the author in the author list.
-\def\Address{$^{1}$Department of Informatics, Systems and Communication, University of Milano-Bicocca, Milano, Italy\\
+\def\Address{$^{1}$Department of Informatics, Systems and Communication, University of Milano-Bicocca, Milan, Italy\\
 $^{2}$Department of Human and Social Sciences, University of Bergamo, Bergamo, Italy\\
-$^{3}$SYSBIO.IT Centre for Systems Biology, Milano, Italy\\
-$^{4}$Department of Industrial Engineering \& Innovation Sciences, Eindhoven University of Technology, Eindhoven, The Netherlands}
+$^{3}$SYSBIO.IT Centre for Systems Biology, Milan, Italy\\
+$^{4}$Department of Industrial Engineering \& Innovation Sciences, Eindhoven University of Technology, Eindhoven, The Netherlands\\
+$^{5}$Milan Center for Neuroscience, University of Milano-Bicocca, Milan, Italy}
 % The Corresponding Author should be marked with an asterisk
 % Provide the exact contact address (this time including street name and city zip code) and email of the corresponding author
 \def\corrAuthor{Marco S. Nobile -- Atlas, 5612 AZ Eindhoven, The Netherlands}
@@ -152,9 +153,9 @@ Stated otherwise, although the communication with the host computer is establish
 Spikey is based on the LIF model with conductance-based synapses \cite{Schemmel2007} and can follow the temporal evolution of all neurons, keeping track of their spiking activity.
 Specifically, at the end of the simulation, Spikey  returns to the host a vector $\boldsymbol{\omega}^j$ containing the spiking time of each neuron $j$ that was involved in the simulation.
 The detailed temporal trace of the membrane potential can be also be recorded, but only for a single selected neuron. 
-This limitation is due to the small amount of RAM memory available on the system (512 MB).
+This limitation is due to the small amount of RAM memory available on the system ($512$ MB).
 
-The 384 neurons are organized into two arrays of 192 neurons each; each neuron can be connected up to 256 synapses, whose weights are defined by the user using 4 bits registers \cite{Pfeil2012}. 
+The $384$ neurons are organized into two arrays of $192$ neurons each; each neuron can be connected up to $256$ synapses, whose weights are defined by the user using 4 bits registers \cite{Pfeil2012}. 
 A synapse with weight equal to 0 is assumed to be turned off by the system. 
 The main advantage provided by Spikey is its high speed when simulating the neural network: thanks to its analog circuitry, Spikey was calculated to be  $10^4$ times faster than biological neural networks \cite{Pfeil2013}. 
 
@@ -162,7 +163,7 @@ The main advantage provided by Spikey is its high speed when simulating the neur
 %If the sum of the input currents is insufficient to make the neuron spike, any change in its potential will be leaked out. 
 \textcolor{blue}{Spikey uses an extension of simple LIF neurons, by introducing the concept  of refractory period: as soon as the neuron spikes, it cannot produce  spikes anymore during the refractory interval. 
 This LIF neuron model has 6 parameters that can be set in the Spikey network \cite{Pfeil2013}, as shown in Table \ref{tab:parameters}. 
-To be more precise, each neuron of the network has 2 parameters, i.e., the leak conductance and the refractory period; while the other 4 parameters pertain to the entire network, i.e, resting, reset, threshold and inhibitory reversal potentials.}
+To be more precise, each neuron of the network has $2$ parameters, i.e., the leak conductance and the refractory period; while the other $4$ parameters pertain to the entire network, i.e, resting, reset, threshold and inhibitory reversal potentials.}
 
 % Because of that, 
 % \todo[inline]{because of cosa sono 6?}
@@ -211,9 +212,10 @@ The most important classes in PyNN are two: \texttt{Population} and  \texttt{Pro
 These two classes are fundamental, as they are used to define the network topology:
 \begin{itemize}
  	\item \texttt{Population} represents a group of uniform cells, all of the same type;
- 	\item \texttt{Projection} is a set of \emph{connections} between two populations, describing the connections
- 	\todo[inline]{links? per evitare la ripetizione}
- 	between pre- and post-synaptic populations. 
+ 	\item \textcolor{blue}{\texttt{Projection} is a set of \emph{connections} between pre- and post-synaptic populations.}
+%  	\item \texttt{Projection} is a set of \emph{connections} between two populations, describing the connections
+%  	\todo[inline]{links? per evitare la ripetizione}
+%  	between pre- and post-synaptic populations. 
  \end{itemize} 
 In principle, the PyNN library provides several models of neurons, but only the LIF model can be used while working with Spikey,
 %, i.e., the  leaky integrate-and-fire neuron model
@@ -221,15 +223,14 @@ relying on synapses with exponentially decaying or alpha-shaped conductances (\t
 In order to provide a stimulus to the network, thus activating the simulation, the \texttt{SpikeSourcePoisson} and \texttt{SpikeSourceArray} stimuli sources can
 \todo[inline]{can?}
 be used.
-These sources generate train
-\todo[inline]{a train o trains?}
-of spikes according to a Poisson process or at user-defined times, respectively.
+These sources generate a sequence of spikes according to a Poisson process or at user-defined times, respectively.
 From a technical standpoint, Spikey considers both sources as actual neurons, so that a population of sources can be created and ``projected'' to the  neuron populations
 \todo[inline]{populations?}
 downstream, in order to propagate the stimuli throughout the network.
 
-Differently from common software simulators, generally based on systems of coupled ordinary differential equations, the simulations performed by analog circuits are subject to noise.
-\todo[inline]{questa frase non ha senso}
+% Differently from common software simulators, generally based on systems of coupled ordinary differential equations, the simulations performed by analog circuits are subject to noise.
+% \todo[inline]{questa frase non ha senso}
+\textcolor{blue}{Differently from classic \emph{in silico} simulations of neural networks---typically based on numerical integrators developed to solve the corresponding systems of coupled differential equations---when specific hardware is employed for the simulation of such networks, as in the case of analog circuits, noise can affect the outcome.}
 There are two main types of noise that can affect Spikey: fixed-pattern noise, and temporal noise. 
 The former is due to physical imperfections on the chip that were generated during the fabrication process; this noise can be recognized and mitigated as it remains identical over time. 
 Temporal noise, on the contrary, is a form of stochasticity introduced by many factors, including electronic and thermal disturbances, which cause Spikey to generate quantitatively different results at each simulation. 
@@ -288,30 +289,30 @@ Since SNATCH is designed to determine all missing parameters of a model, includi
 \section{Results}
 \label{sec:results}
 
-\todo[inline]{in questa sezione, ma forse anche prima, i numeri sono scritti un po' a parole e un po' con le cifre, uniformare please (anche nelle caption)}
+% \todo[inline]{in questa sezione, ma forse anche prima, i numeri sono scritti un po' a parole e un po' con le cifre, uniformare please (anche nelle caption)}
 
-We tested the performances of \name{} on a set of networks characterized by an increasing complexity: a simple system with two sequential neurons with $D=6$ unknown parameters (Figure \ref{fig:topology-2neurons}); a feedback ring network with $D=12$ unknown parameters (Figure \ref{fig:topology-feedback}); a more complex network inspired by the brain of starfish (Figure \ref{fig:topology-starfish}), with $D=17$ unknown parameters.
-\todo[inline]{suggerisco di chiamarli Network A,B,C o Model A,B,C, e fare riferimento nel testo (e nelle caption) con questi "nomi"}
-Besides the connection topology, all figures also show the parameters to be estimated and their nominal values.
+We tested the performances of \name{} on a set of networks characterized by an increasing complexity: a simple system with $2$ sequential neurons with $D=6$ unknown parameters (Network A, Figure \ref{fig:topology-2neurons}); a feedback ring network with $D=12$ unknown parameters (Network B, Figure \ref{fig:topology-feedback}); a more complex network inspired by the nervous system of a starfish (Network C, Figure \ref{fig:topology-starfish}), with $D=17$ unknown parameters.
+% \todo[inline]{suggerisco di chiamarli Network A,B,C o Model A,B,C, e fare riferimento nel testo (e nelle caption) con questi "nomi"}
+Besides the connection topology, all Figures also show the parameters to be estimated and their nominal values.
 For each network, we performed a simulation of the spiking activity that was used as \emph{in silico} target for the calibration.
 The input stimuli, fed to each network, was an irregularly spaced sequence of spiking impulses.
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=.6\textwidth]{images/topologies/2_neurons_topology.pdf}
-	\caption{A simple system with two sequential neurons and six parameters.}
+	\caption{Network A: a simple system with $2$ sequential neurons and $D=6$ parameters.}
 	\label{fig:topology-2neurons}
 \end{figure}
 \begin{figure}[tb]
 	\centering
 	\includegraphics[width=\textwidth]{images/topologies/ring_topology.pdf}
-	\caption{A feedback network with five neurons and twelve parameters.}
+	\caption{Network B: a feedback network with $5$ neurons and $D=12$ parameters.}
 	\label{fig:topology-feedback}
 \end{figure}
 \begin{figure}[tb]
 	\centering
 	\includegraphics[width=.7\textwidth]{images/topologies/starfish_topology.pdf}
-	\caption{The starfish network with five neurons and seventeen parameters. Solid and dashed arcs represent excitatory and inhibitory connections, respectively.}
+	\caption{Network C: the starfish network with $5$ neurons and $D=17$ parameters. Solid and dashed arcs represent excitatory and inhibitory connections, respectively.}
 	\label{fig:topology-starfish}
 \end{figure}
 
@@ -319,29 +320,32 @@ The input stimuli, fed to each network, was an irregularly spaced sequence of sp
 %\name{} was implemented using Python 2.7 and the following libraries:  PyNN 0.6, FST-PSO 1.6, numpy 1.14.3, pexpect 4.5, scipy 1.1, and miniful 0.4.
 %In all results that follow, the calibration was repeated 30 times to collect statistical information and analyze the average behavior of \name{}.
 
-Figure \ref{fig:target-2neurons} shows the result of the preliminary test on the simple two neurons model, comparing the best solution found by \name{} (bottom panel) and the target spiking activity (top panel).
-Each dot in the figures represent a spike produced by one of the two neurons in the network (denoted by green and blue colors).
-The results show that \name{} correctly estimated  the 6 parameters and was able to converge to an optimal solution with respect to the spiking activity.
+Figure \ref{fig:target-2neurons} shows the result of the preliminary test on Network A, by comparing the best solution found by \name{} (bottom panel) and the target spiking activity (top panel).
+Each dot in the plots represent a spike produced by one of the $2$ neurons in the network (denoted by green and blue colors).
+The results show that \name{} correctly estimated  the $6$ parameters and was able to converge to an optimal solution with respect to the spiking activity.
 Thus, from a strictly phenomenological point of view, the Spikey chip is reproducing the expected behavior of the target neural network.
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=\textwidth]{images/2-neurons-irregular/target_sim.pdf}
-	\caption{Comparison of the target (top panel) and the best fitting individual identified by \name{} (bottom panel), in the case of the simple network with 2 neurons.}
+	\caption{Comparison of the target (top panel) and the best fitting individual identified by \name{} (bottom panel), in the case of Network A.}
 	\label{fig:target-2neurons}
 \end{figure}
 
-\todo[inline]{riformulare la caption di Fig.4 (e altre analoghe), non stiamo mostrando il best fitting individual}
+\todo[inline]{riformulare la caption di Fig.4 (e altre analoghe), non stiamo mostrando il best fitting individual.}
+\todo[inline]{MA: Le figure 4 e 5 non si capiscono.  Come si interpretano?}
 
-The six box-plots reported in Figure \ref{fig:boxplots-2neurons} (left side) show the distributions of the optimal parameters identified by \name{} over the 30 runs.
-The red solid lines denote the nominal values used to generate the target data, while the black dashed line represent the better fitting solution found by \name{}. 
-Figure \ref{fig:boxplots-2neurons} (right side) also shows the convergence plot of FST-PSO. 
+The six box-plots reported in Figure \ref{fig:boxplots-2neurons} (left side) show the distributions of the optimal parameters identified by \name{} over the $30$ runs.
+The red solid lines denote the nominal values used to generate the target data, while the black dashed line represent the best fitting solution found by \name{}. 
+Figure \ref{fig:boxplots-2neurons} (right side) shows the convergence plot of FST-PSO.
+
+
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=.25\textwidth]{images/2-neurons-irregular/boxplot_best_values.pdf}
+	\includegraphics[width=.25\textwidth]{images/2-neurons-irregular/boxplot_best_values-test.pdf}
 	\includegraphics[width=.49\textwidth]{images/2-neurons-irregular/mean.pdf}
-	\caption{Results of the calibration of a simple network with 2 neurons using \name{}. On the left we show the distribution of the optimal parameters. The red solid lines denote the nominal values used to generate the target. The black dashed line denote the best parameterization found by \name{}. On the right we show the convergence plot of FST-PSO. The mean and the standard deviation of the 30 runs are denoted by the black solid line and the red filled area, respectively.}
+	\caption{Results of the calibration of Network A using \name{}. On the left we show the distribution of the optimal parameters. The red solid lines denote the nominal values used to generate the target. The black dashed line denote the best parameterization found by \name{}. On the right we show the convergence plot of FST-PSO. The mean and the standard deviation of the $30$ runs are denoted by the black solid line and the red filled area, respectively.}
 	\label{fig:boxplots-2neurons}
 \end{figure}
 
@@ -356,19 +360,19 @@ Again, from the point of view of the pure spiking activity, they
 \todo[inline]{they, YOH! ma poi, their di chi?}
 dynamics are  completely identical.
 
-We repeated the calibration test using the second network, that is, the feedback loop with 5 neurons and 12 missing parameters. 
+We repeated the calibration test Network B, that is, the feedback loop with $5$ neurons and $12$ missing parameters. 
 Figure \ref{fig:target-ring} shows that \name{} was again able to perfectly reproduce the expected behavior, fitting all targets with the exception of some exceeding spiking activity mainly at the end of the simulation.
 \todo[inline]{nessuna ipotesi sul perché si ottiene questo comportamento?}
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=\textwidth]{images/ring-network-regular/target_sim.pdf}
-	\caption{Comparison of the target (top panel) and the best fitting individual identified by \name{} (bottom panel), in the case of the ring network.}
+	\caption{Comparison of the target (top panel) and the best fitting individual identified by \name{} (bottom panel), in the case of Network B.}
 	\label{fig:target-ring}
 \end{figure}
 
-By inspecting the distribution of parameters (Figure \ref{fig:convergence-ring}, left side), some values are very different with respect to the nominal values, while some other show a high sensitivity. 
-This was actually the case of the  weight of neuron 1: being upstream of the whole network, and requires a high precision to reproduce the correct spiking  activity.
+By inspecting the distribution of the $12$ parameters (Figure \ref{fig:convergence-ring}, left side), some values are very different with respect to the nominal values, while some other show a high sensitivity. 
+This was actually the case of the weight of neuron $1$: being upstream of the whole network, it requires a high precision to reproduce the correct spiking  activity.
 \todo[inline]{eh?}
 
 
@@ -376,33 +380,30 @@ This was actually the case of the  weight of neuron 1: being upstream of the who
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=.24\textwidth]{images/ring-network-regular/boxplot-gleak.pdf}
-	\includegraphics[width=.24\textwidth]{images/ring-network-regular/boxplot-weights.pdf}
+	\includegraphics[width=.24\textwidth]{images/ring-network-regular/boxplot-gleak-test.pdf}
+	\includegraphics[width=.24\textwidth]{images/ring-network-regular/boxplot-weights-test.pdf}
 	\includegraphics[width=.49\textwidth]{images/ring-network-regular/mean.pdf}
-	\caption{Results of the calibration of a feedback loop network with 5 neurons using \name{}. On the left we show the distribution of the optimal parameters. The red solid lines denote the nominal values used to generate the target. The black dashed line denote the best parameterization found by \name{}. On the right we show the convergence plot of FST-PSO. The mean and the standard deviation of the 30 runs are denoted by the black solid line and the red filled area, respectively.}
+	\caption{Results of the calibration of a Network B using \name{}. On the left we show the distribution of the optimal parameters. The red solid lines denote the nominal values used to generate the target. The black dashed line denote the best parameterization found by \name{}. On the right we show the convergence plot of FST-PSO. The mean and the standard deviation of the $30$ runs are denoted by the black solid line and the red filled area, respectively.}
 	\label{fig:convergence-ring}
 \end{figure}
 
-In our third group of tests, we calibrated a topology corresponding to...  starfish? \cite{suzuki1971dynamics}.
-\todo[inline,color=lime]{Simone puoi raccontare qualcosa? (MSN)}
-
+In our third group of tests, we calibrated a topology proposed in \cite{suzuki1971dynamics}, corresponding to a simplified model of the starfish nervous system (Network C).
+The central nervous system of the starfish is organized as a nerve ring around its mouth, with radial nerves running along the arms.
+Although lacking a centralized brain, this system is able to control and coordinate the movements of each arm, and it is considered as one of the earliest and most simple example of nervous system in animals.
+%\todo[inline,color=lime]{Simone puoi raccontare qualcosa? (MSN)}
 The purpose of this test was to investigate the performance of \name{} in  inferring the weights of inhibitory synapses. 
 Figure \ref{fig:topology-starfish} shows the topology of this neural network, where the excitatory and inhibitory connections between the neurons are denoted by solid and dashed lines, respectively.
-In this test, \name{} failed
-\todo[inline]{partially failed?}
-to identify any optimal solutions, as shown in Figure \ref{fig:target-stellona}. 
-As a matter of fact, the target and simulated spiking sequences differ as the solution found by \name{} is characterized by a slightly different activity (e.g., neuron 4 spikes two times in the simulation during the interval 0--50 ms, while only a single spike was present in the target).
+In this tests, \name{} was not able to identify any solution that perfectly fit with the target data, as shown in Figure \ref{fig:target-stellona}. 
+As a matter of fact, the target and simulated spiking sequences differ as the solution found by \name{} is characterized by a slightly different activity (e.g., neuron $4$ spikes two times in the simulation during the interval $0$--$50$ ms, while only a single spike was present in the target).
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=\textwidth]{images/failed-starfish/target_sim.pdf}
-	\caption{Comparison of the target (top panel) and the best fitting individual identified by FST-PSO (bottom panel), in the case of the starfish network. }
+	\caption{Comparison of the target (top panel) and the best fitting individual identified by FST-PSO (bottom panel), in the case of Network C. }
 	\label{fig:target-stellona}
 \end{figure}
 
-We investigated this circumstance in order to determine what was preventing FST-PSO
-\todo[inline]{SNATCH?}
-from a proper convergence to an optimal solution. 
+We investigated this circumstance in order to determine what was preventing \name{} from a proper convergence to an optimal solution. 
 By checking the convergence plots of all runs, we observed that the best global solutions $\textbf{g}$ throughout the 30 runs were actually excellent from the point of view of the fitness value (see Figure \ref{fig:starfishall}); in particular, they were much lower than the fitness values achieved in the experiments previously shown. 
 However, many of these solutions were not improved by FST-PSO until the end of the optimization.
 
@@ -482,9 +483,10 @@ would be used to maximize the likelihood of experimental data given the putative
 As soon as we will define a sound fitness function for this calibration problem, we will increase the size of the neural network,
 \todo[inline]{ragazzi, perché tirarsi la merda addosso da soli? riscrivere pls}
 ultimately aiming at the modeling of biologically meaningful topologies---like the sensory networks of model insects  \cite{namiki2009reconstruction,Pfeil2013}---in order to use \name{} to calibrate the system and reproduce their peculiar spiking behavior.
+\todo[inline]{MA: concordo con il commento sopra.  La descrizione del lavoro sembra essere: \emph{abbiamo provato a fare due cose e non hanno funzionato; inoltre non sappiamo bene perch\`{e}}.  Ad un certo punto si era anceh detto di provare pi\`{u} simlazioni dell'architettura "star"; non si capisce bene se ci\`{o} sia stato fatto o no.\\Direi che cos\`{i} il papero non funziona molto.}
 
 \section*{Author Contributions}
-MSN and DMP contributed conception and design of the study; DMP and MSN implemented SNATCH; MA provided access to the Spikey neuromorphic chip; SS provided biological domain knowledge; DMP performed the statistical analysis; DMP, MSN, SS, PC and DB analyzed the results; DMP and MSN wrote the first draft of the manuscript; MA, SS, PC and DB contributed to the writing of the manuscript. All authors contributed to manuscript revision, read and approved the submitted version.
+MSN and DMP contributed conception and design of the study; DMP and MSN implemented SNATCH; SS provided biological domain knowledge; DMP performed the statistical analysis; DMP, MSN, SS, PC and DB analyzed the results; DMP and MSN wrote the first draft of the manuscript; MA launched the research project as part of the activitities of the University of Milan-Bicocca NeuroMI Centre. MA, SS, PC and DB contributed to the writing of the manuscript. All authors contributed to manuscript revision, read and approved the submitted version.
 
 \section*{Funding}
 Details of all funding sources should be provided, including grant numbers if applicable. Please ensure to add all necessary funding information, as after publication this is no longer possible.
